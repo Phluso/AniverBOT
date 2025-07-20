@@ -8,9 +8,9 @@ from sendBackup import *
 import json
 
 user = ""
-sala = 0
 servidorId = 0
-user, sala, servidorId = carregar()
+sala = 0
+user, servidorId, sala = carregar()
 
 intents = discord.Intents.default()
 intents.message_content = True
