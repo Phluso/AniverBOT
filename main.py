@@ -15,6 +15,7 @@ user, servidorId, sala = carregar()
 intents = discord.Intents.default()
 intents.message_content = True
 intents.messages = True
+intents.guilds = True
 intents.members = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
@@ -108,6 +109,7 @@ async def parabens():
     for usuario in listaUsuarios:
         if (usuario["dia"] == hoje.day and usuario["mes"] == hoje.month):
             aniversariantes.append(usuario["id"])
+            await darCargo(usuario["id"], "Aniversariante")
 
     if len(aniversariantes) > 0:
         mensagem = f"Feliz aniversário"
@@ -115,7 +117,6 @@ async def parabens():
             try:
                 usuario = await bot.fetch_user(usuario)
                 mensagem += ", " + usuario.mention
-                await darCargo(usuario, "Aniversariante")
             except:
                 continue
         
@@ -130,15 +131,31 @@ async def parabens():
 
 async def darCargo(usuario, nomeDoCargo):
     try:
-        servidor = bot.get_guild(servidorId)
-        cargo = discord.utils.get(servidor.roles, name=nomeDoCargo)
-        membro = servidor.get_member(usuario.id)
+        try:
+            servidor = bot.get_guild(servidorId)
+            if (servidor == None):
+                raise ValueError()
+        except:
+            log("Servidor não encontrado")
+            return
+        try:
+            cargo = discord.utils.get(servidor.roles, name=nomeDoCargo)
+        except:
+            log("Cargo não encontrado")
+            return
+        try:
+            membro = servidor.get_member(usuario)
+        except:
+            log("Usuário não encontrado")
+            return
         if (cargo == None):
-            log("Cargo não existe")
+            log("Cargo não informado")
             return
         await membro.add_roles(cargo)
     except:
         log("Erro ao conceder cargo")
+        return
+    log("Cargo concedido")
     
 async def removerCargo(nomeDoCargo):
     try:
@@ -164,6 +181,20 @@ async def on_ready():
             #remove o cargo de aniversariante de todos os usuários
             await removerCargo("Aniversariante")
         await asyncio.sleep(60)
+
+@bot.command(name = "concedeCargo")
+async def concedeCargo(ctx):
+    try:
+        listaUsuarios = carregarDados()
+    except:
+        log("Erro ao carregar dados. Verifique se há um arquivo \"usuarios.json\"")
+        return
+    hoje = datetime.datetime.now()
+
+    for usuario in listaUsuarios:
+        if (usuario["dia"] == hoje.day and usuario["mes"] == hoje.month):
+            await darCargo(usuario["id"], "Aniversariante")
+        
 
 @bot.command(name = "resetaCargos")
 async def resetaCargos(ctx):

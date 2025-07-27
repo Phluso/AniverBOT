@@ -48,4 +48,4 @@ def carregar():
         log("Falha ao carregar o ID da sala. Verifique se há um arquivo \"channel\" com o ID da sala")
         exit()
     
-    return user, servidorId, sala
+    return user, int(servidorId), int(sala)
