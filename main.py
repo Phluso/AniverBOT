@@ -231,7 +231,7 @@ async def remove(ctx):
 @bot.event
 async def on_message(message):
     await bot.process_commands(message)
-    if message.author.id == 625073139608715285:
+    if message.author.id == 1210010399135502346:
         await message.add_reaction("🍅")
     if bot.user in message.mentions:
         try:
