@@ -6,6 +6,10 @@ import re
 from lib import *
 from sendBackup import *
 import json
+from random import randint
+
+reactChance = 1
+listeningChance = False
 
 user = ""
 servidorId = 0
@@ -228,11 +232,34 @@ async def remove(ctx):
     resultado = Usuario.removeUsuario(ctx.author.id)
     await ctx.send(resultado)
 
+@bot.command(name = "setChance")
+async def setChance(ctx):
+    if ctx.author.id == 625073139608715285:
+        global listeningChance
+        listeningChance = True
+
 @bot.event
 async def on_message(message):
     await bot.process_commands(message)
-    if message.author.id == 1210010399135502346:
-        await message.add_reaction("🍅")
+    global listeningChance
+    global reactChance
+    if listeningChance:
+        if message.author.id == 625073139608715285:
+            listeningChance = False
+            try:   
+                a = float(message.content[10:])
+                if a > reactChance:
+                    await message.reply(f"Chance de reação aumentada de {reactChance}% para {a}%")
+                if a < reactChance:
+                    await message.reply(f"Chance de reação diminuída de {reactChance}% para {a}%")
+                reactChance = a
+            except:
+                pass
+
+    if randint(1, 100) <= reactChance:
+        reactions = ["🍅", "👍", "👎", "💩"]
+        await message.add_reaction(reactions[randint(0, len(reactions) - 1)])
+
     if bot.user in message.mentions:
         try:
             #procurar data
