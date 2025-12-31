@@ -8,6 +8,8 @@ from sendBackup import *
 import json
 from random import randint
 
+version = "1.0 31-12-2025"
+
 reactChance = 1
 listeningChance = False
 
@@ -189,6 +191,10 @@ async def on_ready():
                 log("Mensagem de ano novo")
                 await bot.get_channel(sala).send("Feliz ano-novo! 🥳🍾🎉")
         await asyncio.sleep(60)
+
+@bot.command(name="version")
+async def returnVersion(ctx):
+    await ctx.send(version)
 
 @bot.command(name = "concedeCargo")
 async def concedeCargo(ctx):
