@@ -184,6 +184,10 @@ async def on_ready():
         if agora.hour == 0 and agora.minute == 0:
             #remove o cargo de aniversariante de todos os usuários
             await removerCargo("Aniversariante")
+            #envia mensagem de ano novo
+            if agora.day == 1 and agora.month == 1:
+                log("Mensagem de ano novo")
+                await bot.get_channel(sala).send("Feliz ano-novo! 🥳🍾🎉")
         await asyncio.sleep(60)
 
 @bot.command(name = "concedeCargo")
