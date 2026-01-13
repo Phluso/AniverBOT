@@ -29,7 +29,6 @@ def carregar():
             user = data["user"]
             servidorId = data["server"]
             sala = data["channel"]
-            print(f"{type(user)} {user}\n{type(servidorId)} {servidorId}\n{type(sala)} {sala}")
             return user, int(servidorId), int(sala)
     except:
         log("Erro ao configurar o bot. Verifique se há um arquivo 'config.json' contendo os atributos 'user', 'server' e 'channel'")
