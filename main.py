@@ -8,9 +8,9 @@ from sendBackup import *
 import json
 from random import randint
 
-version = "1.0 31-12-2025"
+version = "1.0.1 12-01-2026"
 
-reactChance = 1
+reactChance = 0
 listeningChance = False
 
 user = ""
@@ -104,6 +104,13 @@ class Usuario:
 
 async def parabens():
     global bot
+    canal = bot.get_channel(sala)
+    if not canal:
+        log("Erro ao buscar o canal")
+        return False
+    print(canal)
+    mensagem = ""
+
     try:
         listaUsuarios = carregarDados()
     except:
@@ -127,13 +134,13 @@ async def parabens():
                 continue
         
         mensagem += " 🎂"
-
-        canal = bot.get_channel(sala)
-        if canal:
-            await canal.send(mensagem)
-            log("Mensagem de parabéns enviada")
     else:
+        mensagem = "Nenhum aniversariante hoje.\nSe você quiser receber uma mensagem de parabéns no dia do seu aniversário, me marque e escreva a data no formato dia/mês."
         log("Nenhum aniversariante hoje")
+
+    await canal.send(mensagem)
+    log("Mensagem enviada")
+
 
 async def darCargo(usuario, nomeDoCargo):
     try:

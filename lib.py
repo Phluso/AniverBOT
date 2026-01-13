@@ -20,32 +20,17 @@ def salvarDados(lista):
     except:
         raise ValueError()
     
+#não é mais usado  
 def carregar():
-    #carregar token
-    user = ""
+    user, servidorId, sala = "", 0, 0
     try:
-        with open("user", "r") as _user:
-            user = _user.read()
+        with open("config.json", "r") as config:
+            data = json.load(config)
+            user = data["user"]
+            servidorId = data["server"]
+            sala = data["channel"]
+            print(f"{type(user)} {user}\n{type(servidorId)} {servidorId}\n{type(sala)} {sala}")
+            return user, int(servidorId), int(sala)
     except:
-        log("Falha ao carregar o token. Verifique se há um arquivo \"user\" com o user do bot")
+        log("Erro ao configurar o bot. Verifique se há um arquivo 'config.json' contendo os atributos 'user', 'server' e 'channel'")
         exit()
-
-    #carregar servidor
-    servidorId = 0
-    try:
-        with open("server", "r") as _servidor:
-            servidorId = _servidor.read()
-    except:
-        log("Falha ao carregar o servidor. Verifique se há um arquivo \"server\" com o ID do servidor")
-        exit()
-
-    #carregar sala
-    sala = 0
-    try:
-        with open("channel", "r") as f:
-            sala = int(f.read())
-    except:
-        log("Falha ao carregar o ID da sala. Verifique se há um arquivo \"channel\" com o ID da sala")
-        exit()
-    
-    return user, int(servidorId), int(sala)
