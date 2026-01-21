@@ -4,8 +4,6 @@ import discord
 from discord.ext import commands
 import re
 from lib import *
-from sendBackup import *
-import json
 import sqlite3
 
 version = "1.1.0 beta (agora com SQL B^D) 21-01-2026"
