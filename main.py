@@ -185,20 +185,6 @@ async def listaUsuarios(ctx):
         print(f"id= {user[0]} dia= {user[1]} mes= {user[2]}")
     await ctx.send(f"total: {cursor.execute('SELECT COUNT(*) FROM users').fetchone()[0]} usuários")
 
-@bot.command(name = "concedeCargo")
-async def concedeCargo(ctx):
-    try:
-        listaUsuarios = carregarDados()
-    except:
-        log("Erro ao carregar dados. Verifique se há um arquivo \"usuarios.json\"")
-        return
-    hoje = datetime.datetime.now()
-
-    for usuario in listaUsuarios:
-        if (usuario["dia"] == hoje.day and usuario["mes"] == hoje.month):
-            await darCargo(usuario["id"], "Aniversariante")
-        
-
 @bot.command(name = "resetaCargos")
 async def resetaCargos(ctx):
     await removerCargo("Aniversariante")
@@ -207,10 +193,6 @@ async def resetaCargos(ctx):
 async def asyncParabens(ctx):
     log("Função parabens chamada por usuário")
     await parabens()
-
-@bot.command(name = "hora")
-async def mostraHora(ctx):
-    print(datetime.datetime.now())
 
 @bot.command(name = "status")
 async def status(ctx):
