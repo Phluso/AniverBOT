@@ -6,12 +6,16 @@ import re
 from lib import *
 from sendBackup import *
 import json
-from random import randint
+import sqlite3
 
-version = "1.0.1 12-01-2026"
+version = "1.1.0 beta (agora com SQL B^D) 21-01-2026"
 
-reactChance = 0
-listeningChance = False
+conn = sqlite3.connect("users.db")
+cursor = conn.cursor()
+
+#verifica se a tabela users existe antes de fazer qualquer coisa
+cursor.execute("CREATE TABLE IF NOT EXISTS users (id INT, dia INT, mes INT)")
+conn.commit()
 
 user = ""
 servidorId = 0
@@ -39,43 +43,30 @@ class Usuario:
         }
 
     def novoUsuario(id, dia, mes):
-        try:
-            listaUsuarios = carregarDados()
-        except:
-            log("Erro ao carregar dados. Verifique se há um arquivo \"usuarios.json\"")
-            return None
+
         #valida o mês
         if (mes > 0 and mes <= 12):
             diasEmCadaMes = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
             #valida o dia
             if (dia > 0 and dia <= diasEmCadaMes[mes -1]):
                 #procura o nome do usuário na lista de usuários
-                for usuario in listaUsuarios:
-                    if (usuario["id"] == id):
-                        log(f"Atualizando dados do usuário {id}")
-                        #se o usuário for encontrado, atualiza a data de aniversário
-                        usuario["dia"] = dia
-                        usuario["mes"] = mes
-                        usuario["id"] = id
-                        
-                        try:
-                            salvarDados(listaUsuarios)
-                            log("Dados atualizados")
-                            return True
-                        except:
-                            log("Erro ao atualizar dados. Verifique se há um arquivo \"usuarios.json\"")
-                            return False
+                if len(cursor.execute(f"SELECT * FROM users WHERE id = {id}").fetchall()):
+                    #atualiza o dado
+                    try:
+                        cursor.execute(f"UPDATE users SET dia = {dia}, mes = {mes} WHERE id = {id}")
+                        conn.commit()
+                        log("Dados atualizados")
+                        return True
+                    except:
+                        log("Erro ao atualizar dados. Verifique se há um arquivo \"usuarios.json\"")
+                        return False
 
                 else:   #caso não encontre o usuário na lista, adicioná-lo
                     log("Criando novo usuário")
                     #cria uma nova instância da classe Usuario
-                    novoUsuario = Usuario(id, dia, mes)
-                    #transforma a instância em um dicionário temporário
-                    novoUsuario = novoUsuario.dict()
-                    #adiciona o dicionário na array
-                    listaUsuarios.append(novoUsuario)
                     try:
-                        salvarDados(listaUsuarios)
+                        cursor.execute(f"INSERT INTO users (id, dia, mes) VALUES ({id}, {dia}, {mes})")
+                        conn.commit()
                         log(f"Usuário {id} criado")
                         return True
                     except:
@@ -88,16 +79,9 @@ class Usuario:
 
     def removeUsuario(id):
         try:
-            listaUsuarios = carregarDados()
-            for i in range(len(listaUsuarios)):
-                if listaUsuarios[i]["id"] == id:
-                    listaUsuarios.pop(i)
-                    salvarDados(listaUsuarios)
-                    log(f"Usuário {id} removido")
-                    return "Usuário removido"
-            else:
-                log(f"Usuário {id} não encontrado")
-                return "Usuário não encontrado"
+            cursor.execute(f"DELETE FROM users WHERE id = {id}")
+            conn.commit()
+            return f"Usuário {id} removido"
         except:
             log(f"Algo deu errado ao remover o usuário {id}")
             return "Erro ao remover usuário"
@@ -111,18 +95,12 @@ async def parabens():
     print(canal)
     mensagem = ""
 
-    try:
-        listaUsuarios = carregarDados()
-    except:
-        log("Erro ao carregar dados. Verifique se há um arquivo \"usuarios.json\"")
-        return
     hoje = datetime.datetime.now()
     aniversariantes = []
 
-    for usuario in listaUsuarios:
-        if (usuario["dia"] == hoje.day and usuario["mes"] == hoje.month):
-            aniversariantes.append(usuario["id"])
-            await darCargo(usuario["id"], "Aniversariante")
+    for usuario in cursor.execute(f"SELECT id FROM users WHERE dia = {hoje.day} AND mes = {hoje.month}").fetchall():
+        aniversariantes.append(usuario[0])
+        await darCargo(usuario[0], "Aniversariante")
 
     if len(aniversariantes) > 0:
         mensagem = f"Feliz aniversário"
@@ -249,33 +227,9 @@ async def remove(ctx):
     resultado = Usuario.removeUsuario(ctx.author.id)
     await ctx.send(resultado)
 
-@bot.command(name = "setChance")
-async def setChance(ctx):
-    if ctx.author.id == 625073139608715285:
-        global listeningChance
-        listeningChance = True
-
 @bot.event
 async def on_message(message):
     await bot.process_commands(message)
-    global listeningChance
-    global reactChance
-    if listeningChance:
-        if message.author.id == 625073139608715285:
-            listeningChance = False
-            try:   
-                a = float(message.content[10:])
-                if a > reactChance:
-                    await message.reply(f"Chance de reação aumentada de {reactChance}% para {a}%")
-                if a < reactChance:
-                    await message.reply(f"Chance de reação diminuída de {reactChance}% para {a}%")
-                reactChance = a
-            except:
-                pass
-
-    if randint(1, 100) <= reactChance:
-        reactions = ["🍅", "👍", "👎", "💩"]
-        await message.add_reaction(reactions[randint(0, len(reactions) - 1)])
 
     if bot.user in message.mentions:
         try:

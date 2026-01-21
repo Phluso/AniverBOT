@@ -4,3 +4,7 @@ user
 server
 config.json
 usuarios.json
+usuarios old.json
+db.py
+.gitignore
+users.db
