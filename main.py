@@ -181,6 +181,12 @@ async def on_ready():
 async def returnVersion(ctx):
     await ctx.send(version)
 
+@bot.command(name="listaUsuarios")
+async def listaUsuarios(ctx):
+    for user in cursor.execute("SELECT * FROM users").fetchall():
+        print(f"id= {user[0]} dia= {user[1]} mes= {user[2]}")
+    await ctx.send(f"total: {cursor.execute('SELECT COUNT(*) FROM users').fetchone()[0]} usuários")
+
 @bot.command(name = "concedeCargo")
 async def concedeCargo(ctx):
     try:
