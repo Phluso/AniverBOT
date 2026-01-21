@@ -8,3 +8,4 @@ usuarios old.json
 db.py
 .gitignore
 users.db
+sendBackup.py

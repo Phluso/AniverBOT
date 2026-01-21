@@ -210,16 +210,6 @@ async def asyncParabens(ctx):
     log("Função parabens chamada por usuário")
     await parabens()
 
-@bot.command(name = "backup")
-async def mostraLista(ctx):
-    lista = carregarDados()
-    log(lista)
-    resultado = await enviaBackup(json.dumps(lista))
-    if (resultado):
-        log("Email enviado com sucesso")
-    else:
-        log("Erro ao enviar o email")
-
 @bot.command(name = "hora")
 async def mostraHora(ctx):
     print(datetime.datetime.now())
