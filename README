@@ -1,0 +1,20 @@
+O aniverBOT é um bot muito simples para o discord que envia mensagens de aniversário as 7 da manhã para os usuários.
+
+Para usar, basta criar um arquivo config.json, como no exemplo abaixo:
+{
+    "user": [token do bot],
+    "server": [ID do servidor],
+    "channel": [ID da sala onde o bot deve enviar as mensagens]
+}
+
+Se quiser que o bot dê um cargo especial aos aniversariantes, é necessário cria-lo com o nome "Aniversariante"
+
+
+
+Comandos:
+    - Adicionar ou atualizar data de aniversário:               basta marcar o bot e informar a data no formado dia/mês
+    - Remover data de aniversário:                              usar o comando !remove
+    - Listar todos os usuários:                                 comando !listaUsuarios
+    - Enviar mensagem de parabéns manualmente:                  !parabens
+    - Remover cargos manualmente:                               !resetaCargos
+    - Verificar ID da sala:                                     !status
