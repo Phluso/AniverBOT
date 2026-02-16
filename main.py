@@ -6,7 +6,7 @@ import re
 from lib import *
 import sqlite3
 
-version = "1.1.0 beta (agora com SQL B^D) 21-01-2026"
+version = "1.1.1 16-02-2026"
 
 conn = sqlite3.connect("users.db")
 cursor = conn.cursor()
@@ -90,7 +90,6 @@ async def parabens():
     if not canal:
         log("Erro ao buscar o canal")
         return False
-    print(canal)
     mensagem = ""
 
     hoje = datetime.datetime.now()
@@ -202,6 +201,21 @@ async def status(ctx):
 async def remove(ctx):
     resultado = Usuario.removeUsuario(ctx.author.id)
     await ctx.send(resultado)
+
+@bot.command(name = "check")
+async def check(ctx):
+    userId = ctx.author.id
+
+    for data in cursor.execute(f"SELECT dia, mes FROM users WHERE id = {userId}").fetchall():
+        await ctx.send(f"Sua data de aniversário: {str(data[0]).zfill(2)}/{str(data[1]).zfill(2)}\nPara atualizar sua data de aniversário, me marque informando a nova data no formato dia/mês.\nPara remover sua data de aniversário, use o comando '!remove'.")
+        break
+    else:
+        await ctx.send("Aniversário não encontrado. Se quiser receber uma mensagem de parabéns no dia do seu aniversário, me marque informando a data no formato dia/mês.")
+
+@bot.event
+async def on_member_join(member):
+    canal = bot.get_channel(sala)
+    await canal.send(f"Bem-vindo(a), {member.mention}!\nSou um bot de aniversário e vou te dar parabéns e um cargo especial quando chegar o seu dia.\nPara cadastrar sua data de aniversário, me marque informando a data no formato dia/mês 🎂")
 
 @bot.event
 async def on_message(message):
