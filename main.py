@@ -6,7 +6,7 @@ import re
 from lib import *
 import sqlite3
 
-version = "1.1.1 16-02-2026"
+version = "1.1.2 07-03-2026"
 
 conn = sqlite3.connect("users.db")
 cursor = conn.cursor()
@@ -220,6 +220,10 @@ async def on_member_join(member):
 @bot.event
 async def on_message(message):
     await bot.process_commands(message)
+
+    if message.content.startswith("aniverbotsend: "):
+        canal = bot.get_channel(sala)
+        await canal.send(message.content[len("aniverbotsend: "):])
 
     if bot.user in message.mentions:
         try:
