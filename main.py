@@ -6,7 +6,7 @@ import re
 from lib import *
 import sqlite3
 
-version = "1.1.2 07-03-2026"
+version = "1.1.21 15-03-2026"
 
 conn = sqlite3.connect("users.db")
 cursor = conn.cursor()
@@ -225,7 +225,7 @@ async def on_message(message):
         canal = bot.get_channel(sala)
         await canal.send(message.content[len("aniverbotsend: "):])
 
-    if bot.user in message.mentions:
+    if bot.user in message.mentions and message.author != bot.user:
         try:
             #procurar data
             match = re.search(r"(\d{1,2})/(\d{1,2})", message.content)
